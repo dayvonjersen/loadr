@@ -47,7 +47,7 @@ func main() {
 	}
 	checkErr(f.Close())
 
-	//fmt.Println(len(result), "files", formatBytes(s))
+	fmt.Println(len(result), "files", formatBytes(s))
 
 	fmt.Println("Copying files")
 	cmd := exec.Command("python", "upload.py", fmt.Sprintf("%d", s))

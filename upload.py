@@ -19,10 +19,7 @@ def printProgress(currentFile, size, totalFiles):
     global fileCount
     written+=size
     fileCount+=1
-    sys.stdout.write('\r                                                                         ')
-    sys.stdout.write('\r                                                                         ')
-    sys.stdout.write('\rCopying %s (%s) ...' % (currentFile, size))
-    sys.stdout.write('\rWrote %d of %d files       %s / %s        %.1f%%' % (fileCount, totalFiles, formatBytes(written), formatBytes(totalSize), float(written)/float(totalSize)*100.0))
+    print('[%.1f%%] Wrote %d of %d files: %s / %s' % (float(written)/float(totalSize)*100.0, fileCount, totalFiles, formatBytes(written), formatBytes(totalSize)))
 
 target="WALKMAN NWZ-E353/Storage Media/MUSIC"
 content=p.getContentFromDevicePath(target)
@@ -33,8 +30,9 @@ with codecs.open("playlist.txt", "r", "utf-8") as f:
         mp3Name=os.path.basename(mp3)
         mp3Size=os.path.getsize(mp3)
         mp3File=open(mp3, "rb")
+        print('Copying %s (%s) ...' % (mp3Name.encode('utf-8'), formatBytes(mp3Size)))
         content.uploadStream(mp3Name, mp3File, mp3Size)
         mp3File.close()
         printProgress(mp3Name, mp3Size, len(playlist))
 
-print '\nDone.'
+print('Done.')
