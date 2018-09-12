@@ -34,26 +34,17 @@ func (f fileInfoSlice) Find(maxSize int) (index int) {
 func main() {
 	fmt.Println("Generating playlist")
 	rand.Seed(time.Now().Unix())
-
-	f, err := os.Create("playlist.txt")
-	checkErr(err)
-
 	ext := ".mp3"
 	size := 3435973836 //int64(3.2 * 1024 * 1024 * 1024)
-	result, remain := pickr("Z:\\Music\\Mixes", ext, size)
+	path := "Z:\\Music"
+	result := pickr(path, ext, size)
+	f, err := os.Create("playlist.txt")
+	checkErr(err)
 	s := 0
 	for _, r := range result {
 		fmt.Fprintln(f, r.Name)
 		s += r.Size
 	}
-
-	result2, _ := pickr("Z:\\Music", ext, remain)
-
-	for _, r := range result2 {
-		fmt.Fprintln(f, r.Name)
-		s += r.Size
-	}
-
 	checkErr(f.Close())
 
 	fmt.Println(len(result), "files", formatBytes(s))
@@ -65,16 +56,16 @@ func main() {
 	checkErr(cmd.Run())
 }
 
-func pickr(path, ext string, size int) ([]*fileInfo, int) {
+func pickr(path, ext string, size int) []*fileInfo {
 	files := fileInfoSlice(readdir(path, ext))
 	if len(files) == 0 {
-		return nil, size
+		return nil
 	}
 	sort.Sort(files)
 	min := files[0].Size
 	max := files[len(files)-1].Size
 	if min > size {
-		return nil, size
+		return nil
 	}
 	files = files[:files.Find(max)]
 	result := []*fileInfo{}
@@ -86,7 +77,7 @@ func pickr(path, ext string, size int) ([]*fileInfo, int) {
 		files = append(files[0:i], files[i+1:]...)
 		files = files[:files.Find(size)]
 	}
-	return result, size
+	return result
 }
 
 func readdir(path, ext string) []*fileInfo {
